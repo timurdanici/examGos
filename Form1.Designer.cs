@@ -33,8 +33,6 @@ namespace gosExam
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.btnClearStudent = new System.Windows.Forms.Button();
-            this.label14 = new System.Windows.Forms.Label();
-            this.txtSearchStudent = new System.Windows.Forms.TextBox();
             this.btnDeleteStudent = new System.Windows.Forms.Button();
             this.btnSaveStudent = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
@@ -45,13 +43,14 @@ namespace gosExam
             this.txtEmail = new System.Windows.Forms.TextBox();
             this.txtLastName = new System.Windows.Forms.TextBox();
             this.txtFirstName = new System.Windows.Forms.TextBox();
+            this.txtSearchStudent = new System.Windows.Forms.TextBox();
+            this.label14 = new System.Windows.Forms.Label();
             this.dgvStudents = new System.Windows.Forms.DataGridView();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.cmbFilterTrainer = new System.Windows.Forms.ComboBox();
+            this.label16 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.btnClearCourse = new System.Windows.Forms.Button();
-            this.label16 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.numFilterDuration = new System.Windows.Forms.NumericUpDown();
             this.numDuration = new System.Windows.Forms.NumericUpDown();
             this.numPrice = new System.Windows.Forms.NumericUpDown();
             this.btnDeleteCourse = new System.Windows.Forms.Button();
@@ -62,7 +61,9 @@ namespace gosExam
             this.label8 = new System.Windows.Forms.Label();
             this.txtTrainer = new System.Windows.Forms.TextBox();
             this.txtTitle = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
             this.dgvCourses = new System.Windows.Forms.DataGridView();
+            this.numFilterDuration = new System.Windows.Forms.NumericUpDown();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.dtpEnrollment = new System.Windows.Forms.DateTimePicker();
@@ -79,17 +80,16 @@ namespace gosExam
             this.label11 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.dgvEnrollments = new System.Windows.Forms.DataGridView();
-            this.cmbFilterTrainer = new System.Windows.Forms.ComboBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvStudents)).BeginInit();
             this.tabPage2.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numFilterDuration)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numDuration)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numPrice)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCourses)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numFilterDuration)).BeginInit();
             this.tabPage3.SuspendLayout();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvEnrollments)).BeginInit();
@@ -154,25 +154,6 @@ namespace gosExam
             this.btnClearStudent.Text = "Clear";
             this.btnClearStudent.UseVisualStyleBackColor = false;
             this.btnClearStudent.Click += new System.EventHandler(this.btnClearStudent_Click);
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Font = new System.Drawing.Font("Nirmala UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label14.Location = new System.Drawing.Point(6, 36);
-            this.label14.Name = "label14";
-            this.label14.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.label14.Size = new System.Drawing.Size(39, 20);
-            this.label14.TabIndex = 16;
-            this.label14.Text = "Find";
-            // 
-            // txtSearchStudent
-            // 
-            this.txtSearchStudent.Location = new System.Drawing.Point(51, 36);
-            this.txtSearchStudent.Name = "txtSearchStudent";
-            this.txtSearchStudent.Size = new System.Drawing.Size(151, 23);
-            this.txtSearchStudent.TabIndex = 15;
-            this.txtSearchStudent.Click += new System.EventHandler(this.txtSearchStudent_TextChanged);
             // 
             // btnDeleteStudent
             // 
@@ -267,6 +248,25 @@ namespace gosExam
             this.txtFirstName.Size = new System.Drawing.Size(140, 25);
             this.txtFirstName.TabIndex = 0;
             // 
+            // txtSearchStudent
+            // 
+            this.txtSearchStudent.Location = new System.Drawing.Point(51, 36);
+            this.txtSearchStudent.Name = "txtSearchStudent";
+            this.txtSearchStudent.Size = new System.Drawing.Size(151, 23);
+            this.txtSearchStudent.TabIndex = 15;
+            this.txtSearchStudent.Click += new System.EventHandler(this.txtSearchStudent_TextChanged);
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Font = new System.Drawing.Font("Nirmala UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label14.Location = new System.Drawing.Point(6, 36);
+            this.label14.Name = "label14";
+            this.label14.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.label14.Size = new System.Drawing.Size(39, 20);
+            this.label14.TabIndex = 16;
+            this.label14.Text = "Find";
+            // 
             // dgvStudents
             // 
             this.dgvStudents.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -274,6 +274,7 @@ namespace gosExam
             this.dgvStudents.Name = "dgvStudents";
             this.dgvStudents.Size = new System.Drawing.Size(600, 424);
             this.dgvStudents.TabIndex = 0;
+            this.dgvStudents.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvStudents_CellClick);
             // 
             // tabPage2
             // 
@@ -290,6 +291,26 @@ namespace gosExam
             this.tabPage2.Size = new System.Drawing.Size(873, 496);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Course";
+            // 
+            // cmbFilterTrainer
+            // 
+            this.cmbFilterTrainer.FormattingEnabled = true;
+            this.cmbFilterTrainer.Location = new System.Drawing.Point(64, 37);
+            this.cmbFilterTrainer.Name = "cmbFilterTrainer";
+            this.cmbFilterTrainer.Size = new System.Drawing.Size(134, 23);
+            this.cmbFilterTrainer.TabIndex = 16;
+            this.cmbFilterTrainer.SelectedIndexChanged += new System.EventHandler(this.FilterCourses_Changed);
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Font = new System.Drawing.Font("Nirmala UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label16.Location = new System.Drawing.Point(221, 37);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(58, 20);
+            this.label16.TabIndex = 17;
+            this.label16.Text = "Length";
+            this.label16.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // groupBox2
             // 
@@ -323,35 +344,6 @@ namespace gosExam
             this.btnClearCourse.Text = "Clear";
             this.btnClearCourse.UseVisualStyleBackColor = false;
             this.btnClearCourse.Click += new System.EventHandler(this.btnClearCourse_Click);
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Font = new System.Drawing.Font("Nirmala UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label16.Location = new System.Drawing.Point(221, 37);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(58, 20);
-            this.label16.TabIndex = 17;
-            this.label16.Text = "Length";
-            this.label16.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Font = new System.Drawing.Font("Nirmala UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.Location = new System.Drawing.Point(4, 36);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(58, 20);
-            this.label9.TabIndex = 16;
-            this.label9.Text = "Trainer";
-            // 
-            // numFilterDuration
-            // 
-            this.numFilterDuration.Location = new System.Drawing.Point(286, 39);
-            this.numFilterDuration.Name = "numFilterDuration";
-            this.numFilterDuration.Size = new System.Drawing.Size(151, 23);
-            this.numFilterDuration.TabIndex = 15;
-            this.numFilterDuration.ValueChanged += new System.EventHandler(this.FilterCourses_Changed);
             // 
             // numDuration
             // 
@@ -446,6 +438,16 @@ namespace gosExam
             this.txtTitle.Size = new System.Drawing.Size(140, 25);
             this.txtTitle.TabIndex = 0;
             // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("Nirmala UI", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label9.Location = new System.Drawing.Point(4, 36);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(58, 20);
+            this.label9.TabIndex = 16;
+            this.label9.Text = "Trainer";
+            // 
             // dgvCourses
             // 
             this.dgvCourses.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -453,6 +455,15 @@ namespace gosExam
             this.dgvCourses.Name = "dgvCourses";
             this.dgvCourses.Size = new System.Drawing.Size(600, 424);
             this.dgvCourses.TabIndex = 1;
+            this.dgvCourses.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvCourses_CellClick);
+            // 
+            // numFilterDuration
+            // 
+            this.numFilterDuration.Location = new System.Drawing.Point(286, 39);
+            this.numFilterDuration.Name = "numFilterDuration";
+            this.numFilterDuration.Size = new System.Drawing.Size(151, 23);
+            this.numFilterDuration.TabIndex = 15;
+            this.numFilterDuration.ValueChanged += new System.EventHandler(this.FilterCourses_Changed);
             // 
             // tabPage3
             // 
@@ -626,15 +637,6 @@ namespace gosExam
             this.dgvEnrollments.Size = new System.Drawing.Size(600, 462);
             this.dgvEnrollments.TabIndex = 2;
             // 
-            // cmbFilterTrainer
-            // 
-            this.cmbFilterTrainer.FormattingEnabled = true;
-            this.cmbFilterTrainer.Location = new System.Drawing.Point(64, 37);
-            this.cmbFilterTrainer.Name = "cmbFilterTrainer";
-            this.cmbFilterTrainer.Size = new System.Drawing.Size(134, 23);
-            this.cmbFilterTrainer.TabIndex = 16;
-            this.cmbFilterTrainer.SelectedIndexChanged += new System.EventHandler(this.FilterCourses_Changed);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -654,10 +656,10 @@ namespace gosExam
             this.tabPage2.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numFilterDuration)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numDuration)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numPrice)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvCourses)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numFilterDuration)).EndInit();
             this.tabPage3.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
