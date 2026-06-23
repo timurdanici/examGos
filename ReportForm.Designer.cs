@@ -35,6 +35,7 @@ namespace gosExam
             // reportViewer1
             // 
             this.reportViewer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.reportViewer1.LocalReport.ReportEmbeddedResource = "gosExam.ReportPayments.rdlc";
             this.reportViewer1.Location = new System.Drawing.Point(0, 0);
             this.reportViewer1.Name = "reportViewer1";
             this.reportViewer1.ServerReport.BearerToken = null;
@@ -49,7 +50,6 @@ namespace gosExam
             this.Controls.Add(this.reportViewer1);
             this.Name = "ReportForm";
             this.Text = "Report";
-            this.Load += new System.EventHandler(this.ReportForm_Load_1);
             this.ResumeLayout(false);
 
 		}

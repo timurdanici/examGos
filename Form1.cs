@@ -2,6 +2,7 @@
 using System.Data;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
+using System.Text.RegularExpressions;
 
 namespace gosExam
 {
@@ -9,7 +10,6 @@ namespace gosExam
     {
         // Connection string - adjust credentials if needed
         string connStr = "Server=localhost;Database=TrainingCenter;Uid=root;Pwd=root;";
-
         // Track selected IDs (0 means "New mode")
         int selectedStudentId = 0;
         int selectedCourseId = 0;
@@ -21,6 +21,14 @@ namespace gosExam
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            numPrice.Maximum = 1000000;
+            numDuration.Maximum = 10000;
+            numFilterDuration.Maximum = 10000;
+
+            StyleDataGridView(dgvStudents);
+            StyleDataGridView(dgvCourses);
+            StyleDataGridView(dgvEnrollments);
+
             LoadAllData();
             LoadTrainerFilter();
         }
@@ -28,26 +36,58 @@ namespace gosExam
         // --- GLOBAL DATA REFRESH ---
         private void LoadAllData()
         {
-            RefreshGrid("SELECT * FROM Student", dgvStudents);
-            RefreshGrid("SELECT * FROM Course", dgvCourses);
-            RefreshGrid(@"SELECT e.EnrollmentId, s.LastName, c.Title, e.EnrollmentDate, e.PaymentStatus 
+            try
+            {
+                RefreshGrid("SELECT * FROM Student", dgvStudents);
+                RefreshGrid("SELECT * FROM Course", dgvCourses);
+                RefreshGrid(@"SELECT e.EnrollmentId, s.LastName, c.Title, e.EnrollmentDate, e.PaymentStatus 
                           FROM Enrollment e 
                           JOIN Student s ON e.StudentId = s.StudentId 
                           JOIN Course c ON e.CourseId = c.CourseId", dgvEnrollments);
 
-            // Fill Combos for Enrollment tab
-            FillCombo("SELECT StudentId, CONCAT(FirstName, ' ', LastName) as Display FROM Student", cmbStudent);
-            FillCombo("SELECT CourseId, Title as Display FROM Course", cmbCourse);
-            FillCombo("SELECT StudentId, CONCAT(FirstName, ' ', LastName) as Display FROM Student", cmbViewByStudent);
+                // Fill Combos for Enrollment tab
+                FillCombo("SELECT StudentId, CONCAT(FirstName, ' ', LastName) as Display FROM Student", cmbStudent);
+                FillCombo("SELECT CourseId, Title as Display FROM Course", cmbCourse);
+                FillCombo("SELECT StudentId, CONCAT(FirstName, ' ', LastName) as Display FROM Student", cmbViewByStudent);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Database Error: " + ex.Message);
+            }
         }
 
         // --- TAB 1: STUDENT MANAGEMENT ---
 
         private void btnSaveStudent_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtLastName.Text) || string.IsNullOrWhiteSpace(txtEmail.Text))
+            if (string.IsNullOrWhiteSpace(txtFirstName.Text) || string.IsNullOrWhiteSpace(txtLastName.Text) || string.IsNullOrWhiteSpace(txtEmail.Text))
             {
-                MessageBox.Show("Last Name and Email are mandatory!"); return;
+                MessageBox.Show("Please fill in all mandatory fields (First Name, Last Name, Email).", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!IsOnlyLetters(txtFirstName.Text) || !IsOnlyLetters(txtLastName.Text))
+            {
+                MessageBox.Show("Names should contain only letters.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(txtPhone.Text) && !IsOnlyDigits(txtPhone.Text))
+            {
+                MessageBox.Show("Phone number must contain only digits.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!IsValidEmail(txtEmail.Text))
+            {
+                MessageBox.Show("Please enter a valid email address (e.g., user@example.com).", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!IsEmailUnique(txtEmail.Text, selectedStudentId))
+            {
+                MessageBox.Show("This email is already registered to another student.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
 
             using (MySqlConnection conn = new MySqlConnection(connStr))
@@ -67,6 +107,7 @@ namespace gosExam
                 cmd.ExecuteNonQuery();
                 ClearStudentFields();
                 LoadAllData();
+                MessageBox.Show("Student saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -129,7 +170,23 @@ namespace gosExam
 
         private void btnSaveCourse_Click(object sender, EventArgs e)
         {
-            if (numPrice.Value <= 0) { MessageBox.Show("Price must be > 0!"); return; }
+            if (string.IsNullOrWhiteSpace(txtTitle.Text) || string.IsNullOrWhiteSpace(txtTrainer.Text))
+            {
+                MessageBox.Show("Course Title and Trainer name are required.", "Validation Error");
+                return;
+            }
+
+            if (!IsOnlyLetters(txtTrainer.Text))
+            {
+                MessageBox.Show("Trainer name should contain only letters.", "Validation Error");
+                return;
+            }
+
+            if (numPrice.Value <= 0)
+            {
+                MessageBox.Show("Price must be greater than 0!", "Validation Error");
+                return;
+            }
 
             using (MySqlConnection conn = new MySqlConnection(connStr))
             {
@@ -148,7 +205,8 @@ namespace gosExam
                 cmd.ExecuteNonQuery();
                 ClearCourseFields();
                 LoadAllData();
-                LoadTrainerFilter(); // Refresh trainer list if new trainer added
+                LoadTrainerFilter();
+                MessageBox.Show("Course saved successfully!");
             }
         }
 
@@ -328,5 +386,74 @@ namespace gosExam
         {
             new ReportForm().ShowDialog();
         }
+
+        private void StyleDataGridView(DataGridView dgv)
+        {
+            dgv.ReadOnly = true;                 
+            dgv.SelectionMode = DataGridViewSelectionMode.FullRowSelect; 
+            dgv.MultiSelect = false;             
+            dgv.AllowUserToAddRows = false;     
+            dgv.AllowUserToResizeRows = false;   
+            dgv.RowHeadersVisible = false;       
+            dgv.BackgroundColor = System.Drawing.Color.White; 
+            dgv.BorderStyle = BorderStyle.None;  
+
+            dgv.DefaultCellStyle.SelectionBackColor = System.Drawing.Color.FromArgb(51, 153, 255); 
+            dgv.DefaultCellStyle.SelectionForeColor = System.Drawing.Color.White;
+            dgv.DefaultCellStyle.Font = new System.Drawing.Font("Segoe UI", 9); 
+
+            dgv.EnableHeadersVisualStyles = false; 
+            dgv.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            dgv.ColumnHeadersDefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(45, 45, 48);
+            dgv.ColumnHeadersDefaultCellStyle.ForeColor = System.Drawing.Color.White;
+            dgv.ColumnHeadersDefaultCellStyle.Font = new System.Drawing.Font("Segoe UI Semibold", 10);
+            dgv.ColumnHeadersHeight = 35; 
+
+            dgv.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(245, 245, 245);
+
+            dgv.GridColor = System.Drawing.Color.FromArgb(230, 230, 230);
+            dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill; 
+        }
+
+        private bool IsValidEmail(string email)
+        {
+            string pattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+            return Regex.IsMatch(email, pattern);
+        }
+
+        private bool IsOnlyLetters(string text)
+        {
+            return Regex.IsMatch(text, @"^[a-zA-Zа-яА-Я\s-]+$");
+        }
+
+        private bool IsOnlyDigits(string text)
+        {
+            return Regex.IsMatch(text, @"^[0-9]+$");
+        }
+
+        private bool IsEmailUnique(string email, int excludeId)
+        {
+            string sql = "SELECT COUNT(*) FROM Student WHERE Email = @e AND StudentId != @id";
+            return !HasRecords(sql, new MySqlParameter("@e", email), new MySqlParameter("@id", excludeId));
+        }
+
+        private void OnlyLetters_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsLetter(e.KeyChar) && !char.IsControl(e.KeyChar) && e.KeyChar != ' ' && e.KeyChar != '-')
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void OnlyDigits_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsDigit(e.KeyChar) && !char.IsControl(e.KeyChar))
+            {
+                e.Handled = true;
+            }
+        }
+
     }
+
+
 }

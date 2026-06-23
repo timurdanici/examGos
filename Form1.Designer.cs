@@ -226,6 +226,7 @@ namespace gosExam
             this.txtPhone.Name = "txtPhone";
             this.txtPhone.Size = new System.Drawing.Size(140, 25);
             this.txtPhone.TabIndex = 3;
+            this.txtPhone.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OnlyDigits_KeyPress);
             // 
             // txtEmail
             // 
@@ -240,6 +241,7 @@ namespace gosExam
             this.txtLastName.Name = "txtLastName";
             this.txtLastName.Size = new System.Drawing.Size(140, 25);
             this.txtLastName.TabIndex = 1;
+            this.txtLastName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OnlyLetters_KeyPress);
             // 
             // txtFirstName
             // 
@@ -247,6 +249,7 @@ namespace gosExam
             this.txtFirstName.Name = "txtFirstName";
             this.txtFirstName.Size = new System.Drawing.Size(140, 25);
             this.txtFirstName.TabIndex = 0;
+            this.txtFirstName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OnlyLetters_KeyPress);
             // 
             // txtSearchStudent
             // 
@@ -269,9 +272,12 @@ namespace gosExam
             // 
             // dgvStudents
             // 
+            this.dgvStudents.AllowUserToAddRows = false;
+            this.dgvStudents.AllowUserToDeleteRows = false;
             this.dgvStudents.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvStudents.Location = new System.Drawing.Point(0, 74);
             this.dgvStudents.Name = "dgvStudents";
+            this.dgvStudents.ReadOnly = true;
             this.dgvStudents.Size = new System.Drawing.Size(600, 424);
             this.dgvStudents.TabIndex = 0;
             this.dgvStudents.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvStudents_CellClick);
@@ -430,6 +436,7 @@ namespace gosExam
             this.txtTrainer.Name = "txtTrainer";
             this.txtTrainer.Size = new System.Drawing.Size(140, 25);
             this.txtTrainer.TabIndex = 1;
+            this.txtTrainer.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OnlyLetters_KeyPress);
             // 
             // txtTitle
             // 
@@ -450,9 +457,12 @@ namespace gosExam
             // 
             // dgvCourses
             // 
+            this.dgvCourses.AllowUserToAddRows = false;
+            this.dgvCourses.AllowUserToDeleteRows = false;
             this.dgvCourses.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvCourses.Location = new System.Drawing.Point(0, 74);
             this.dgvCourses.Name = "dgvCourses";
+            this.dgvCourses.ReadOnly = true;
             this.dgvCourses.Size = new System.Drawing.Size(600, 424);
             this.dgvCourses.TabIndex = 1;
             this.dgvCourses.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvCourses_CellClick);
@@ -553,6 +563,9 @@ namespace gosExam
             // cmbStatus
             // 
             this.cmbStatus.FormattingEnabled = true;
+            this.cmbStatus.Items.AddRange(new object[] {
+            "Unpaid",
+            "Paid"});
             this.cmbStatus.Location = new System.Drawing.Point(115, 140);
             this.cmbStatus.Name = "cmbStatus";
             this.cmbStatus.Size = new System.Drawing.Size(140, 25);
@@ -631,9 +644,12 @@ namespace gosExam
             // 
             // dgvEnrollments
             // 
+            this.dgvEnrollments.AllowUserToAddRows = false;
+            this.dgvEnrollments.AllowUserToDeleteRows = false;
             this.dgvEnrollments.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvEnrollments.Location = new System.Drawing.Point(0, 36);
             this.dgvEnrollments.Name = "dgvEnrollments";
+            this.dgvEnrollments.ReadOnly = true;
             this.dgvEnrollments.Size = new System.Drawing.Size(600, 462);
             this.dgvEnrollments.TabIndex = 2;
             // 
@@ -646,6 +662,7 @@ namespace gosExam
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Main Form";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();

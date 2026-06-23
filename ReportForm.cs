@@ -14,7 +14,7 @@ namespace gosExam
         {
             InitializeComponent();
             this.WindowState = FormWindowState.Maximized;
-            this.Text = "Final Participation & Payments Report";
+            this.Text = "Student Participation Report";
         }
 
         private void ReportForm_Load(object sender, EventArgs e)
@@ -28,7 +28,6 @@ namespace gosExam
             {
                 using (MySqlConnection conn = new MySqlConnection(connStr))
                 {
-                    // SQL Query for the report (Requirement 13 & Bonus: Sort by TotalSum Desc)
                     string sql = @"
                         SELECT 
                             CONCAT(s.FirstName, ' ', s.LastName) as FullName, 
@@ -44,58 +43,20 @@ namespace gosExam
                     DataTable dt = new DataTable();
                     da.Fill(dt);
 
-                    // Setup ReportViewer
                     reportViewer1.LocalReport.DataSources.Clear();
 
-                    // Name "DataSet1" must EXACTLY match the name in the .rdlc file
-                    ReportDataSource rds = new ReportDataSource("DataSet1", dt);
+                    ReportDataSource rds = new ReportDataSource("DataSet", dt);
                     reportViewer1.LocalReport.DataSources.Add(rds);
 
-                    // Point to the RDLC file
                     reportViewer1.LocalReport.ReportPath = "ReportPayments.rdlc";
-
-                    // Bonus: Adding global statistics as Report Parameters (Optional)
-                    // If you want to show total revenue at the top/bottom
-                    AddReportStatistics(conn);
 
                     reportViewer1.RefreshReport();
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error loading report: " + ex.Message);
+                MessageBox.Show("Error loading report: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
-        // Method for Bonus Requirements (Total Revenue, Avg payment, etc.)
-        private void AddReportStatistics(MySqlConnection conn)
-        {
-            // This is how you can get single values for the report summary
-            string statsSql = @"
-                SELECT 
-                    COUNT(DISTINCT StudentId) as TotalStudents,
-                    IFNULL(SUM(Price), 0) as TotalRevenue
-                FROM Enrollment e
-                JOIN Course c ON e.CourseId = c.CourseId";
-
-            MySqlCommand cmd = new MySqlCommand(statsSql, conn);
-            conn.Open();
-            using (MySqlDataReader dr = cmd.ExecuteReader())
-            {
-                if (dr.Read())
-                {
-                    // To use these, you must add 'Report Parameters' in your RDLC file
-                    // Example: ReportParameter p1 = new ReportParameter("TotalRev", dr["TotalRevenue"].ToString());
-                    // reportViewer1.LocalReport.SetParameters(new ReportParameter[] { p1 });
-                }
-            }
-            conn.Close();
-        }
-
-		private void ReportForm_Load_1(object sender, EventArgs e)
-		{
-
-			this.reportViewer1.RefreshReport();
-		}
-	}
+    }
 }
